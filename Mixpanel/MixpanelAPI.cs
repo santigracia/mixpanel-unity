@@ -306,6 +306,17 @@ namespace mixpanel
         }
 
         /// <summary>
+        /// Enables or disables gzip compression for payloads sent to the /track endpoint. This setting will override what is set in the Unity Project Settings.
+        /// </summary>
+        /// <param name="useGzipCompression">If true, payloads will be compressed using gzip compression</param>
+        public static void SetUseGzipCompression(bool useGzipCompression)
+        {
+            if (!IsInitialized()) return;
+            MixpanelSettings.Instance.UseGzipCompression = useGzipCompression;
+            MixpanelSettings.Instance.ApplyToConfig();
+        }
+
+        /// <summary>
         /// Disables Mixpanel Component. Useful if you have "Manual Initialization" enabled under your Project Settings.
         /// </summary>
         public static void Disable()

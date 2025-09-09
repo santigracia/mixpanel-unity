@@ -12,6 +12,8 @@
   - [Initialize Mixpanel](#2-initialize-mixpanel)
   - [Send Data](#3-send-data)
   - [Check for Success](#4-check-for-success)
+- [Configuration](#configuration)
+  - [Gzip Compression](#gzip-compression)
 - [FAQ](#faq)
 - [I want to know more!](#i-want-to-know-more)
 
@@ -61,6 +63,35 @@ Mixpanel.Track("Plan Selected", props);
 
 [Open up Events in Mixpanel](http://mixpanel.com/report/events) to view incoming events.
 Once data hits our API, it generally takes ~60 seconds for it to be processed, stored, and queryable in your project.
+
+
+
+# Configuration
+
+## Gzip Compression
+
+The Mixpanel Unity SDK supports gzip compression for payloads sent to the `/track` endpoint. This can help reduce bandwidth usage and improve performance, especially for applications that send large amounts of tracking data.
+
+**Default:** Gzip compression is disabled by default.
+
+### Enable via Unity Editor
+
+1. Open Unity Project Settings (Edit → Project Settings → Mixpanel)
+2. Check the "Use Gzip Compression" checkbox
+
+### Enable programmatically:
+
+```csharp
+using mixpanel;
+
+// Enable gzip compression
+Mixpanel.SetUseGzipCompression(true);
+
+// Disable gzip compression
+Mixpanel.SetUseGzipCompression(false);
+```
+
+**Note:** Gzip compression only applies to event tracking data sent to the `/track` endpoint. User profile updates sent to the `/engage` endpoint are not compressed.
 
 👋 👋 Tell us about the Mixpanel developer experience! [https://www.mixpanel.com/devnps](https://www.mixpanel.com/devnps) 👍 👎
 

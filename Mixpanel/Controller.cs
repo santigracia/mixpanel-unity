@@ -10,6 +10,8 @@ using Unity.Jobs;
 using Unity.Collections;
 using System.Net;
 using System.Net.Http;
+using System.IO;
+using System.IO.Compression;
 
 #if UNITY_IOS
 using UnityEngine.iOS;
@@ -130,11 +132,33 @@ namespace mixpanel
             string url = (flushType == MixpanelStorage.FlushType.EVENTS) ? Config.TrackUrl : Config.EngageUrl;
             Value batch = MixpanelStorage.DequeueBatchTrackingData(flushType, Config.BatchSize);
             while (batch.Count > 0) {
-                WWWForm form = new WWWForm();
                 String payload = batch.ToString();
-                form.AddField("data", payload);
                 Mixpanel.Log("Sending batch of data: " + payload);
-                using (UnityWebRequest request = UnityWebRequest.Post(url, form))
+                
+                UnityWebRequest request;
+                
+                // Use gzip compression for /track endpoint if enabled
+                if (Config.UseGzipCompression && flushType == MixpanelStorage.FlushType.EVENTS) {
+                    // Create form data and compress it
+                    string formData = "data=" + System.Uri.EscapeDataString(payload);
+                    byte[] formDataBytes = Encoding.UTF8.GetBytes(formData);
+                    byte[] compressedData = CompressData(formDataBytes);
+                    
+                    Mixpanel.Log($"Using gzip compression. Original size: {formDataBytes.Length} bytes, Compressed size: {compressedData.Length} bytes");
+                    
+                    request = new UnityWebRequest(url, "POST");
+                    request.uploadHandler = new UploadHandlerRaw(compressedData);
+                    request.downloadHandler = new DownloadHandlerBuffer();
+                    request.SetRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+                    request.SetRequestHeader("Content-Encoding", "gzip");
+                } else {
+                    // Use standard form data
+                    WWWForm form = new WWWForm();
+                    form.AddField("data", payload);
+                    request = UnityWebRequest.Post(url, form);
+                }
+                
+                using (request)
                 {
                     yield return request.SendWebRequest();
                     #if UNITY_2020_1_OR_NEWER
@@ -369,6 +393,18 @@ namespace mixpanel
         }
 
         #endregion
+
+        private static byte[] CompressData(byte[] data)
+        {
+            using (var memoryStream = new MemoryStream())
+            {
+                using (var gzipStream = new GZipStream(memoryStream, CompressionMode.Compress))
+                {
+                    gzipStream.Write(data, 0, data.Length);
+                }
+                return memoryStream.ToArray();
+            }
+        }
 
         internal static class Metadata
         {

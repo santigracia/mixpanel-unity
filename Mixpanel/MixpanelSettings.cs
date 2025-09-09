@@ -28,6 +28,8 @@ namespace mixpanel
         public float FlushInterval = 60f;
         [Tooltip("If true, the library will use the IP address of the client for geolocation. If false, the library will use the IP address of the Mixpanel server for geolocation.")]
         public bool UseIpAddressForGeolocation = true;
+        [Tooltip("If true, payloads to /track will be compressed using gzip compression.")]
+        public bool UseGzipCompression = false;
 
         internal string Token {
             get {
@@ -48,6 +50,7 @@ namespace mixpanel
             Config.ShowDebug = ShowDebug;
             Config.ManualInitialization = ManualInitialization;
             Config.FlushInterval = FlushInterval;
+            Config.UseGzipCompression = UseGzipCompression;
         }
 
         #region static
