@@ -45,6 +45,31 @@ To initialize the library, first open the unity project settings menu for Mixpan
 
 ![unity_screenshots](https://user-images.githubusercontent.com/36679208/152408022-62440f50-04c7-4ff3-b331-02d3d3122c9e.jpg)
 
+### Gzip Compression
+
+The Mixpanel Unity SDK supports gzip compression for payloads sent to the `/track` endpoint. This can help reduce bandwidth usage and improve performance, especially for applications that send large amounts of tracking data.
+
+**Default:** Gzip compression is disabled by default.
+
+#### Enable via Unity Editor
+
+1. Open Unity Project Settings (Edit → Project Settings → Mixpanel)
+2. Check the "Use Gzip Compression" checkbox
+
+### Enable programmatically:
+
+```csharp
+using mixpanel;
+
+// Enable gzip compression
+Mixpanel.SetUseGzipCompression(true);
+
+// Disable gzip compression
+Mixpanel.SetUseGzipCompression(false);
+```
+
+**Note:** Gzip compression only applies to event tracking data sent to the `/track` endpoint. User profile updates sent to the `/engage` endpoint are not compressed.
+
 ## 3. Send Data
 
 Let's get started by sending event data. You can send an event from anywhere in your application. Better understand user behavior by storing details that are specific to the event (properties).
@@ -64,34 +89,6 @@ Mixpanel.Track("Plan Selected", props);
 [Open up Events in Mixpanel](http://mixpanel.com/report/events) to view incoming events.
 Once data hits our API, it generally takes ~60 seconds for it to be processed, stored, and queryable in your project.
 
-
-
-# Configuration
-
-## Gzip Compression
-
-The Mixpanel Unity SDK supports gzip compression for payloads sent to the `/track` endpoint. This can help reduce bandwidth usage and improve performance, especially for applications that send large amounts of tracking data.
-
-**Default:** Gzip compression is disabled by default.
-
-### Enable via Unity Editor
-
-1. Open Unity Project Settings (Edit → Project Settings → Mixpanel)
-2. Check the "Use Gzip Compression" checkbox
-
-### Enable programmatically:
-
-```csharp
-using mixpanel;
-
-// Enable gzip compression
-Mixpanel.SetUseGzipCompression(true);
-
-// Disable gzip compression
-Mixpanel.SetUseGzipCompression(false);
-```
-
-**Note:** Gzip compression only applies to event tracking data sent to the `/track` endpoint. User profile updates sent to the `/engage` endpoint are not compressed.
 
 👋 👋 Tell us about the Mixpanel developer experience! [https://www.mixpanel.com/devnps](https://www.mixpanel.com/devnps) 👍 👎
 
